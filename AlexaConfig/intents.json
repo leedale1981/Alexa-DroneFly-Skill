@@ -1,0 +1,17 @@
+{
+  "intents": [
+    {
+      "intent": "IsItSafeToFly",
+      "slots": [
+        {
+          "name": "Date",
+          "type": "AMAZON.DATE"
+        },
+        {
+          "name": "Address",
+          "type": "AMAZON.AT_REGION"
+        }
+      ]
+    }
+  ]
+}

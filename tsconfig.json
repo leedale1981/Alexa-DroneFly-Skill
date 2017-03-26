@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "noImplicitAny": false,
+        "sourceMap": true,
+        "types": [ "node", "core-js"],
+        "lib": [
+            "dom",
+            "es2015.promise",
+            "es5"
+        ]
+    }
+}
