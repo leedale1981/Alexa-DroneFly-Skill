@@ -8,6 +8,7 @@ class MetOffice {
         this.apiKey = "30d2c41c-20e6-4aec-9385-6d359d413bb3";
         this.baseHost = "datapoint.metoffice.gov.uk";
         this.basePath = "/public/data/";
+        this.retryCount = 3;
         this.address = address;
     }
     GetMetData() {
@@ -57,6 +58,8 @@ class MetOffice {
         return promise;
     }
     GetLocationIdFromCoords(coordinates) {
+        let self = this;
+        let retryIndex = 1;
         let promise = new es6_promise_1.Promise((resolve, reject) => {
             http.get(this.GetSiteListOptions(), function (res) {
                 let data = "";
@@ -65,29 +68,41 @@ class MetOffice {
                     data += chunk;
                 });
                 res.on("end", function () {
-                    let json = JSON.parse(data);
-                    let locations = json.Locations.Location;
-                    let locationId;
-                    let resolution = 0.04;
-                    let latHigh = parseFloat(coordinates.latitude) + resolution;
-                    let latLow = parseFloat(coordinates.latitude) - resolution;
-                    let longHigh = parseFloat(coordinates.longitude) + resolution;
-                    let longLow = parseFloat(coordinates.longitude) - resolution;
-                    locations.forEach(function (location, index) {
-                        if (parseFloat(location.latitude) < latHigh &&
-                            parseFloat(location.latitude) > latLow &&
-                            parseFloat(location.longitude) < longHigh &&
-                            parseFloat(location.longitude) > longLow) {
-                            locationId = parseInt(location.id);
+                    if (data !== "") {
+                        resolve(self.GetLocationIdFromData(data, coordinates));
+                    }
+                    else {
+                        while (retryIndex <= self.retryCount) {
+                            self.GetLocationIdFromCoords(coordinates).then(function (locationId) {
+                                resolve(locationId);
+                            });
                         }
-                    });
-                    resolve(locationId);
+                    }
                 });
             }).on("error", function (error) {
                 reject(error);
             });
         });
         return promise;
+    }
+    GetLocationIdFromData(data, coordinates) {
+        let json = JSON.parse(data);
+        let locations = json.Locations.Location;
+        let locationId;
+        let resolution = 0.04;
+        let latHigh = parseFloat(coordinates.latitude) + resolution;
+        let latLow = parseFloat(coordinates.latitude) - resolution;
+        let longHigh = parseFloat(coordinates.longitude) + resolution;
+        let longLow = parseFloat(coordinates.longitude) - resolution;
+        locations.forEach(function (location, index) {
+            if (parseFloat(location.latitude) < latHigh &&
+                parseFloat(location.latitude) > latLow &&
+                parseFloat(location.longitude) < longHigh &&
+                parseFloat(location.longitude) > longLow) {
+                locationId = parseInt(location.id);
+            }
+        });
+        return locationId;
     }
     GetSiteListOptions() {
         let options = {

@@ -24,15 +24,25 @@ class CanIFlyRoute extends route_1.BaseRoute {
             let metOffice = new MetOffice.MetOffice(alexaRequest.Region);
             metOffice.GetMetData().then(function (forecast) {
                 let responseText = MetOffice.WeatherText.GetFlyingTextFromForecast(forecast);
+                console.log("Response text: " + responseText);
                 if (alexaRequest.Type === "IntentRequest") {
+                    console.log("Intent request.");
                     res.json(self.handleIntentRequest(responseText));
                 }
                 if (alexaRequest.Type === "LaunchRequest") {
+                    console.log("Launch request.");
                     res.json(self.handleLaunchRequest());
                 }
+                console.log("Problem with Alexa Request.");
+                res.statusCode = 500;
+                res.json({ message: "Problem with Alexa Request." });
             }).catch(function (error) {
-                console.log(error);
+                res.statusCode = 500;
+                res.json({ message: error });
             });
+        }
+        else {
+            res.json({ message: "Invalid application id." });
         }
     }
     handleLaunchRequest() {

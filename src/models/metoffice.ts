@@ -13,6 +13,7 @@ export class MetOffice {
     private baseHost: string = "datapoint.metoffice.gov.uk";
     private basePath: string = "/public/data/";
     private address: string;
+    private retryCount: number = 3;
 
     constructor(address: string) {
         this.address = address;
@@ -77,6 +78,9 @@ export class MetOffice {
     }
 
     private GetLocationIdFromCoords(coordinates: Mapping.Coordinates): Promise<number> {
+        let self = this;
+        let retryIndex: number = 1;
+
         let promise: Promise<number> = new Promise<number>(
             (resolve: (locationId: number)=> void, reject: (error: Error)=> void) => {
                 http.get(this.GetSiteListOptions(), function(res: http.IncomingMessage): void {
@@ -88,25 +92,16 @@ export class MetOffice {
                     });
 
                     res.on("end", function() {
-                        let json = JSON.parse(data);
-                        let locations: Array<any> = json.Locations.Location;
-                        let locationId: number;
-                        let resolution: number = 0.04;
-                        let latHigh: number = parseFloat(coordinates.latitude) + resolution;
-                        let latLow: number = parseFloat(coordinates.latitude) - resolution;
-                        let longHigh: number = parseFloat(coordinates.longitude) + resolution;
-                        let longLow: number = parseFloat(coordinates.longitude) - resolution;
-                        
-                        locations.forEach(function(location: any, index: number): void {
-                            if (parseFloat(location.latitude) < latHigh &&
-                                parseFloat(location.latitude) > latLow &&
-                                parseFloat(location.longitude) < longHigh &&
-                                parseFloat(location.longitude) > longLow) {
-                                    locationId = parseInt(location.id);
-                                }
-                        });
-
-                        resolve(locationId);
+                        if (data !== "") {
+                            resolve(self.GetLocationIdFromData(data, coordinates));
+                        }
+                        else {
+                            while (retryIndex <= self.retryCount) {
+                                self.GetLocationIdFromCoords(coordinates).then(function(locationId: number): void {
+                                    resolve(locationId)
+                                });
+                            }
+                        }
                     });
                 }).on("error", function(error: Error): void {
                     reject(error);
@@ -115,6 +110,28 @@ export class MetOffice {
         );
 
         return promise;
+    }
+
+    private GetLocationIdFromData(data: string, coordinates: Mapping.Coordinates): number {
+        let json = JSON.parse(data);
+        let locations: Array<any> = json.Locations.Location;
+        let locationId: number;
+        let resolution: number = 0.04;
+        let latHigh: number = parseFloat(coordinates.latitude) + resolution;
+        let latLow: number = parseFloat(coordinates.latitude) - resolution;
+        let longHigh: number = parseFloat(coordinates.longitude) + resolution;
+        let longLow: number = parseFloat(coordinates.longitude) - resolution;
+        
+        locations.forEach(function(location: any, index: number): void {
+            if (parseFloat(location.latitude) < latHigh &&
+                parseFloat(location.latitude) > latLow &&
+                parseFloat(location.longitude) < longHigh &&
+                parseFloat(location.longitude) > longLow) {
+                    locationId = parseInt(location.id);
+                }
+        });
+
+        return locationId;
     }
 
     private GetSiteListOptions(): http.RequestOptions {
