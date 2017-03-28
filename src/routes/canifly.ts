@@ -87,7 +87,7 @@ export class CanIFlyRoute extends BaseRoute {
     }
   }
 
-  private handleLaunchRequest(): any {
+  private handleLaunchRequest(): AlexaResponses.AlexaJson {
     
     let alexaCard: AlexaResponses.AlexaCard = new AlexaResponses.AlexaCard();
     alexaCard.type = "Simple";
@@ -105,10 +105,10 @@ export class CanIFlyRoute extends BaseRoute {
     let alexaJson: AlexaResponses.AlexaJson = new AlexaResponses.AlexaJson();
     alexaJson.response = alexaResponse;
 
-    return JSON.stringify(alexaJson);
+    return alexaJson;
   }
 
-  private handleIntentRequest(responseText: string): any {
+  private handleIntentRequest(responseText: string): AlexaResponses.AlexaJson {
     let alexaCard: AlexaResponses.AlexaCard = new AlexaResponses.AlexaCard();
     alexaCard.type = "Simple";
     alexaCard.title = responseText;
@@ -125,7 +125,7 @@ export class CanIFlyRoute extends BaseRoute {
     let alexaJson: AlexaResponses.AlexaJson = new AlexaResponses.AlexaJson();
     alexaJson.response = alexaResponse;
 
-    return JSON.stringify(alexaJson);
+    return alexaJson;
   }
 
   private handleSessionEndRequest(): any {

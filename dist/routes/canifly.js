@@ -58,7 +58,7 @@ class CanIFlyRoute extends route_1.BaseRoute {
         alexaResponse.outputSpeech = alexaOutput;
         let alexaJson = new AlexaResponses.AlexaJson();
         alexaJson.response = alexaResponse;
-        return JSON.stringify(alexaJson);
+        return alexaJson;
     }
     handleIntentRequest(responseText) {
         let alexaCard = new AlexaResponses.AlexaCard();
@@ -73,7 +73,7 @@ class CanIFlyRoute extends route_1.BaseRoute {
         alexaResponse.outputSpeech = alexaOutput;
         let alexaJson = new AlexaResponses.AlexaJson();
         alexaJson.response = alexaResponse;
-        return JSON.stringify(alexaJson);
+        return alexaJson;
     }
     handleSessionEndRequest() {
     }

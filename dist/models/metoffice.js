@@ -72,7 +72,8 @@ class MetOffice {
                         resolve(self.GetLocationIdFromData(data, coordinates));
                     }
                     else {
-                        while (retryIndex <= self.retryCount) {
+                        if (retryIndex <= self.retryCount) {
+                            retryIndex++;
                             self.GetLocationIdFromCoords(coordinates).then(function (locationId) {
                                 resolve(locationId);
                             });
