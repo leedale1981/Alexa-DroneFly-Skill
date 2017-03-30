@@ -203,8 +203,8 @@ export class WeatherText {
     }
 
     public static GetFlyingTextFromForecast(forecast: Forecast): string {
-        let yesResponseText: string = "Testing 4! Yes you can fly today.";
-        let noResponseText: string = "Testing 4! You should not fly today.";
+        let yesResponseText: string = "Testing 5! Yes you can fly today.";
+        let noResponseText: string = "Testing 5! You should not fly today.";
         let responseText: string;
 
         switch (forecast.weatherType) {
