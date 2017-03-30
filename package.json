@@ -8,10 +8,10 @@
     "grunt": "grunt",
     "start": "node ./bin/www.js",
     "docker-build": "docker build -t leedale/dronefly .",
-    "docker-tag": "docker tag leedale/dronefly leedale/dronefly:0.7.1",
+    "docker-tag": "docker tag leedale/dronefly leedale/dronefly:0.7.3",
     "docker-login": "docker login -u leedale",
-    "docker-push": "docker push leedale/dronefly:0.7.1",
-    "docker-run": "docker build -p 55555:8080 -d leedale/dronefly:0.7.1 --no-cache true"
+    "docker-push": "docker push leedale/dronefly:0.7.3",
+    "docker-run": "docker build -p 55555:8080 -d leedale/dronefly:0.7.3 --no-cache true"
   },
   "keywords": [
     "uav",
