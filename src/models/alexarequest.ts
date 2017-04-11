@@ -22,16 +22,22 @@ export class AlexaRequest {
         this.requestJson = request;
         this.AppId = this.requestJson.session.application.applicationId;
         this.Type = this.requestJson.request.type;
-        this.IntentName = this.requestJson.request.intent.name;
-        this.IntentDate = new Date(this.requestJson.request.intent.slots.Date.value);
-        this.Region = this.requestJson.request.intent.slots.Address.value;
-    }
-
-    public IsValidRequest(): Boolean {
-        if (this.AppId === this.validApplicationId && this.IntentName === this.validIntentName) {
-            return true;
+        this.IntentName = "";
+        
+        if (this.requestJson.request.intent !== undefined) {
+            this.IntentName = this.requestJson.request.intent.name;
+            this.IntentDate = new Date(this.requestJson.request.intent.slots.Date.value);
+            this.Region = this.requestJson.request.intent.slots.Address.value;
         }
     }
 
+    public IsValidRequest(): Boolean {
+        if (this.AppId === this.validApplicationId) {
+            if (this.IntentName === "" || this.IntentName === this.validIntentName) {
+                return true;
+            }
+        }
 
+        return false;
+    }
 }

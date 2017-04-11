@@ -109,7 +109,7 @@ export class CanIFlyRoute extends BaseRoute {
     let alexaCard: AlexaResponses.AlexaCard = new AlexaResponses.AlexaCard();
     alexaCard.type = "Simple";
     alexaCard.title = responseText;
-    alexaCard.content = "";
+    alexaCard.content = "<p>" + responseText + "<p>";
 
     let alexaOutput: AlexaResponses.AlexaOutputSpeech = new AlexaResponses.AlexaOutputSpeech();
     alexaOutput.type = "PlainText";

@@ -224,6 +224,7 @@ export class WeatherText {
     }
 
     public static GetFlyingTextFromForecast(forecast: Forecast): string {
+
         let yesResponseText: string = "Yes you should be fine to fly your drone.";
         let noResponseText: string = "I would advise against flying your drone.";
         let responseText: string;
@@ -244,7 +245,7 @@ export class WeatherText {
             break;
 
           case "8":
-            responseText = yesResponseText + " However it be overcast.";
+            responseText = yesResponseText + " However it will be overcast.";
             break;
 
           case "9":
