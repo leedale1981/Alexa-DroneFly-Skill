@@ -57,7 +57,7 @@ export class CanIFlyRoute extends BaseRoute {
 
     if (alexaRequest.IsValidRequest()) {
       let metOffice: MetOffice.MetOffice = new MetOffice.MetOffice(alexaRequest.Region);
-      metOffice.GetMetData().then(function(forecast: MetOffice.Forecast): void {
+      metOffice.GetMetData(alexaRequest.IntentDate).then(function(forecast: MetOffice.Forecast): void {
         
         let responseText: string = MetOffice.WeatherText.GetFlyingTextFromForecast(forecast);
         console.log("Response text: " + responseText);
@@ -73,17 +73,14 @@ export class CanIFlyRoute extends BaseRoute {
         }
         
         console.log("Problem with Alexa Request.");
-
-        res.statusCode = 500;
-        res.json({ message: "Problem with Alexa Request." });
+        res.json(self.handleErrorResponse("Problem with Alexa Request."));
 
       }).catch(function(error: string): void {
-        res.statusCode = 500;
-        res.json({ message: error });
+        res.json(self.handleErrorResponse(error));
       });
     }
     else {
-      res.json({ message: "Invalid application id."});
+      res.json(self.handleErrorResponse("Invalid application id."));
     }
   }
 
@@ -117,6 +114,27 @@ export class CanIFlyRoute extends BaseRoute {
     let alexaOutput: AlexaResponses.AlexaOutputSpeech = new AlexaResponses.AlexaOutputSpeech();
     alexaOutput.type = "PlainText";
     alexaOutput.text = responseText;
+
+    let alexaResponse: AlexaResponses.AlexaResponse = new AlexaResponses.AlexaResponse();
+    alexaResponse.card = alexaCard;
+    alexaResponse.outputSpeech = alexaOutput;
+
+    let alexaJson: AlexaResponses.AlexaJson = new AlexaResponses.AlexaJson();
+    alexaJson.response = alexaResponse;
+
+    return alexaJson;
+  }
+
+  private handleErrorResponse(error: string): AlexaResponses.AlexaJson {
+    
+    let alexaCard: AlexaResponses.AlexaCard = new AlexaResponses.AlexaCard();
+    alexaCard.type = "Simple";
+    alexaCard.title = "Can I fly my drone?";
+    alexaCard.content = "";
+
+    let alexaOutput: AlexaResponses.AlexaOutputSpeech = new AlexaResponses.AlexaOutputSpeech();
+    alexaOutput.type = "PlainText";
+    alexaOutput.text = error;
 
     let alexaResponse: AlexaResponses.AlexaResponse = new AlexaResponses.AlexaResponse();
     alexaResponse.card = alexaCard;

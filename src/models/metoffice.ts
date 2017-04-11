@@ -19,7 +19,7 @@ export class MetOffice {
         this.address = address;
     }
 
-    public GetMetData(): Promise<Forecast> {
+    public GetMetData(date: Date): Promise<Forecast> {
         let self = this;
         let promise: Promise<Forecast> = new Promise<Forecast>(
             (resolve: (forecast: Forecast)=> void, reject: (str: string)=> void) => {
@@ -28,7 +28,12 @@ export class MetOffice {
                 map.GetCoordinates().then(function(coordinates: Mapping.Coordinates): Promise<number> {
                     return self.GetLocationIdFromCoords(coordinates);
                 }).then(function(locationId: number): Promise<Forecast> {
-                    return self.GetForcastFromLocation(locationId);
+                    if (locationId === undefined) {
+                        reject("Sorry I could not find the location you asked for. Please ask for a valid location in the UK.")
+                    }
+                    else {
+                        return self.GetForcastFromLocation(locationId, date);
+                    }
                 }).then(function(forecast: Forecast): void {
                     resolve(forecast);
                 }).catch(function(error: string): void {
@@ -50,7 +55,23 @@ export class MetOffice {
         return forecast;
     }
 
-    private GetForcastFromLocation(locationId: number) : Promise<Forecast> {
+    private GetForecastValueForDate(json: any, date: Date): any {
+        let periods: Array<any> = json.SiteRep.DV.Location.Period;
+        
+        for (let index: number = 0; index < periods.length; index++) {
+            let period: any = periods[index];
+            let dateTemplate: string = "yyyy-MM-dd";
+            let periodDate: Date = new Date(period.value);
+
+            if (date.getUTCDate() === periodDate.getUTCDate() &&
+                date.getUTCMonth() === periodDate.getUTCMonth() &&
+                date.getUTCFullYear() == periodDate.getUTCFullYear()) {
+                return period.Rep[0];
+            }
+        }
+    }
+
+    private GetForcastFromLocation(locationId: number, date: Date) : Promise<Forecast> {
         let self = this;
         let promise: Promise<Forecast> = new Promise<Forecast>(
             (resolve: (forecast: Forecast)=> void, reject: (error: Error)=> void) => {
@@ -64,7 +85,7 @@ export class MetOffice {
 
                     res.on("end", function() {
                         let json = JSON.parse(data);
-                        let forecastValue: any = json.SiteRep.DV.Location.Period[0].Rep[0];
+                        let forecastValue: any = self.GetForecastValueForDate(json, date);
                         let forecast: Forecast = self.MapJsonToForecast(forecastValue);
                         resolve(forecast);
                     });
@@ -203,8 +224,8 @@ export class WeatherText {
     }
 
     public static GetFlyingTextFromForecast(forecast: Forecast): string {
-        let yesResponseText: string = "Yes you can fly today.";
-        let noResponseText: string = "You should not fly today.";
+        let yesResponseText: string = "Yes you should be fine to fly your drone.";
+        let noResponseText: string = "I would advise against flying your drone.";
         let responseText: string;
 
         switch (forecast.weatherType) {
@@ -230,13 +251,13 @@ export class WeatherText {
           case "10":
           case "11":
           case "12":
-            responseText = noResponseText + " There will be light rain showers today.";
+            responseText = noResponseText + " There will be light rain showers.";
             break;
 
           case "13":
           case "14":
           case "15":
-            responseText = noResponseText + " There will be heavy rain showers today.";
+            responseText = noResponseText + " There will be heavy rain showers.";
             break;
 
           case "16":
@@ -245,7 +266,7 @@ export class WeatherText {
           case "19":
           case "20":
           case "21":
-            responseText = noResponseText + " There will be hail or sleet showers today.";
+            responseText = noResponseText + " There will be hail or sleet showers.";
             break;
 
           case "22":

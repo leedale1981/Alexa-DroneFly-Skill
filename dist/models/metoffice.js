@@ -11,14 +11,19 @@ class MetOffice {
         this.retryCount = 3;
         this.address = address;
     }
-    GetMetData() {
+    GetMetData(date) {
         let self = this;
         let promise = new es6_promise_1.Promise((resolve, reject) => {
             let map = new Mapping.Map(this.address);
             map.GetCoordinates().then(function (coordinates) {
                 return self.GetLocationIdFromCoords(coordinates);
             }).then(function (locationId) {
-                return self.GetForcastFromLocation(locationId);
+                if (locationId === undefined) {
+                    reject("Sorry I could not find the location you asked for. Please ask for a valid location in the UK.");
+                }
+                else {
+                    return self.GetForcastFromLocation(locationId, date);
+                }
             }).then(function (forecast) {
                 resolve(forecast);
             }).catch(function (error) {
@@ -36,7 +41,20 @@ class MetOffice {
         forecast.precipitationChance = json.PPn;
         return forecast;
     }
-    GetForcastFromLocation(locationId) {
+    GetForecastValueForDate(json, date) {
+        let periods = json.SiteRep.DV.Location.Period;
+        for (let index = 0; index < periods.length; index++) {
+            let period = periods[index];
+            let dateTemplate = "yyyy-MM-dd";
+            let periodDate = new Date(period.value);
+            if (date.getUTCDate() === periodDate.getUTCDate() &&
+                date.getUTCMonth() === periodDate.getUTCMonth() &&
+                date.getUTCFullYear() == periodDate.getUTCFullYear()) {
+                return period.Rep[0];
+            }
+        }
+    }
+    GetForcastFromLocation(locationId, date) {
         let self = this;
         let promise = new es6_promise_1.Promise((resolve, reject) => {
             http.get(this.GetForecastOptions(locationId.toString()), function (res) {
@@ -47,7 +65,7 @@ class MetOffice {
                 });
                 res.on("end", function () {
                     let json = JSON.parse(data);
-                    let forecastValue = json.SiteRep.DV.Location.Period[0].Rep[0];
+                    let forecastValue = self.GetForecastValueForDate(json, date);
                     let forecast = self.MapJsonToForecast(forecastValue);
                     resolve(forecast);
                 });
@@ -156,8 +174,8 @@ class WeatherText {
         return text;
     }
     static GetFlyingTextFromForecast(forecast) {
-        let yesResponseText = "Yes you can fly today.";
-        let noResponseText = "You should not fly today.";
+        let yesResponseText = "Yes you should be fine to fly your drone.";
+        let noResponseText = "I would advise against flying your drone.";
         let responseText;
         switch (forecast.weatherType) {
             case "6":
@@ -178,12 +196,12 @@ class WeatherText {
             case "10":
             case "11":
             case "12":
-                responseText = noResponseText + " There will be light rain showers today.";
+                responseText = noResponseText + " There will be light rain showers.";
                 break;
             case "13":
             case "14":
             case "15":
-                responseText = noResponseText + " There will be heavy rain showers today.";
+                responseText = noResponseText + " There will be heavy rain showers.";
                 break;
             case "16":
             case "17":
@@ -191,7 +209,7 @@ class WeatherText {
             case "19":
             case "20":
             case "21":
-                responseText = noResponseText + " There will be hail or sleet showers today.";
+                responseText = noResponseText + " There will be hail or sleet showers.";
                 break;
             case "22":
             case "23":
