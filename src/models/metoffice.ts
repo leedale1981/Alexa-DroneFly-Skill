@@ -235,7 +235,7 @@ export class WeatherText {
             break;
 
           case "1":
-            responseText = yesResponseText + " It is a sunny day today and should be perfect for flying.";
+            responseText = yesResponseText + " It is a sunny day and should be perfect for flying.";
             break;
 
           case "3":
@@ -276,13 +276,13 @@ export class WeatherText {
           case "25":
           case "26":
           case "27":
-            responseText = noResponseText + " There will be snow showers today.";
+            responseText = noResponseText + " There will be snow showers.";
             break;
 
           case "28":
           case "29":
           case "30":
-            responseText = noResponseText + " There will be thunder today.";
+            responseText = noResponseText + " There will be thunder.";
             break;
         }
 

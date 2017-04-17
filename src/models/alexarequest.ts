@@ -13,27 +13,35 @@ export class AlexaRequest {
 
     private requestJson: any;
     private validApplicationId: string;
-    private validIntentName: string;
+    private validIntentNames: Array<string>;
 
-    constructor(request, validAppId: string, validIntentName: string) {
+    constructor(request, validAppId: string, validIntentNames: Array<string>) {
         this.validApplicationId = validAppId;
-        this.validIntentName = validIntentName;
+        this.validIntentNames = validIntentNames;
 
         this.requestJson = request;
         this.AppId = this.requestJson.session.application.applicationId;
         this.Type = this.requestJson.request.type;
         this.IntentName = "";
-        
+
         if (this.requestJson.request.intent !== undefined) {
             this.IntentName = this.requestJson.request.intent.name;
-            this.IntentDate = new Date(this.requestJson.request.intent.slots.Date.value);
-            this.Region = this.requestJson.request.intent.slots.Address.value;
+
+            if (this.requestJson.request.intent.slots !== undefined) {
+                if (this.requestJson.request.intent.slots.Date !== undefined &&
+                    this.requestJson.request.intent.slots.Address !== undefined){
+
+                    this.IntentDate = new Date(this.requestJson.request.intent.slots.Date.value);
+                    this.Region = this.requestJson.request.intent.slots.Address.value;
+                }
+            }
         }
     }
 
     public IsValidRequest(): Boolean {
         if (this.AppId === this.validApplicationId) {
-            if (this.IntentName === "" || this.IntentName === this.validIntentName) {
+            if (this.IntentName === "" || 
+                this.validIntentNames.indexOf(this.IntentName) !== -1) {
                 return true;
             }
         }

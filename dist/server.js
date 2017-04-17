@@ -7,6 +7,7 @@ const logger = require("morgan");
 const path = require("path");
 const errorHandler = require("errorhandler");
 const methodOverride = require("method-override");
+const verifier = require("alexa-verifier-middleware");
 const canifly_1 = require("./routes/canifly");
 class Server {
     static bootstrap() {
@@ -25,10 +26,6 @@ class Server {
         this.app.set("views", path.join(__dirname, "views"));
         this.app.set("view engine", "pug");
         this.app.use(logger("dev"));
-        this.app.use(bodyParser.json());
-        this.app.use(bodyParser.urlencoded({
-            extended: true
-        }));
         this.app.use(cookieParser("SECRET_GOES_HERE"));
         this.app.use(methodOverride());
         this.app.use(function (err, req, res, next) {
@@ -40,6 +37,11 @@ class Server {
     routes() {
         let router;
         router = express.Router();
+        router.use(verifier);
+        router.use(bodyParser.json());
+        router.use(bodyParser.urlencoded({
+            extended: true
+        }));
         canifly_1.CanIFlyRoute.create(router);
         this.app.use(router);
     }

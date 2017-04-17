@@ -22,6 +22,12 @@ export class AlexaResponse {
 
     public outputSpeech: AlexaOutputSpeech;
     public card: AlexaCard;
+    public reprompt: AlexaRepromptResponse;
+    public shouldEndSession: boolean;
+}
+
+export class AlexaRepromptResponse {
+    public outputSpeech: AlexaOutputSpeech;
 }
 
 /**

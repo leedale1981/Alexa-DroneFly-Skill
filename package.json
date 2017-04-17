@@ -8,10 +8,10 @@
     "grunt": "grunt",
     "start": "node ./bin/www.js",
     "docker-build": "docker build -t leedale/dronefly .",
-    "docker-tag": "docker tag leedale/dronefly leedale/dronefly:0.7.6",
+    "docker-tag": "docker tag leedale/dronefly leedale/dronefly:0.8.5",
     "docker-login": "docker login -u leedale",
-    "docker-push": "docker push leedale/dronefly:0.7.6",
-    "docker-run": "docker build -p 55555:8080 -d leedale/dronefly:0.7.6 --no-cache true"
+    "docker-push": "docker push leedale/dronefly:0.8.5",
+    "docker-run": "docker build -p 55555:8080 -d leedale/dronefly:0.8.5 --no-cache true"
   },
   "keywords": [
     "uav",
@@ -21,6 +21,8 @@
   "author": "Lee Dale",
   "license": "MIT",
   "dependencies": {
+    "alexa-verifier": "^0.3.6",
+    "alexa-verifier-middleware": "^0.2.2",
     "body-parser": "^1.16.1",
     "cookie-parser": "^1.4.3",
     "core-js": "^2.4.1",

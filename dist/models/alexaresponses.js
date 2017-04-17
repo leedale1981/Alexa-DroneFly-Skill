@@ -9,6 +9,9 @@ exports.AlexaJson = AlexaJson;
 class AlexaResponse {
 }
 exports.AlexaResponse = AlexaResponse;
+class AlexaRepromptResponse {
+}
+exports.AlexaRepromptResponse = AlexaRepromptResponse;
 class AlexaCard {
 }
 exports.AlexaCard = AlexaCard;

@@ -182,7 +182,7 @@ class WeatherText {
                 responseText = noResponseText + " There is fog and the visibility is " + WeatherText.GetVisibilityFromForecase(forecast);
                 break;
             case "1":
-                responseText = yesResponseText + " It is a sunny day today and should be perfect for flying.";
+                responseText = yesResponseText + " It is a sunny day and should be perfect for flying.";
                 break;
             case "3":
             case "2":
@@ -190,7 +190,7 @@ class WeatherText {
                 responseText = yesResponseText + " However it could be cloudy.";
                 break;
             case "8":
-                responseText = yesResponseText + " However it be overcast.";
+                responseText = yesResponseText + " However it will be overcast.";
                 break;
             case "9":
             case "10":
@@ -217,12 +217,12 @@ class WeatherText {
             case "25":
             case "26":
             case "27":
-                responseText = noResponseText + " There will be snow showers today.";
+                responseText = noResponseText + " There will be snow showers.";
                 break;
             case "28":
             case "29":
             case "30":
-                responseText = noResponseText + " There will be thunder today.";
+                responseText = noResponseText + " There will be thunder.";
                 break;
         }
         return responseText;

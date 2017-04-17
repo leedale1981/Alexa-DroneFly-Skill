@@ -5,6 +5,7 @@ import * as logger from "morgan";
 import * as path from "path";
 import errorHandler = require("errorhandler");
 import methodOverride = require("method-override");
+import verifier = require("alexa-verifier-middleware");
 
 import { CanIFlyRoute } from "./routes/canifly";
 
@@ -76,14 +77,6 @@ export class Server {
     //use logger middlware
     this.app.use(logger("dev"));
 
-    //use json form parser middlware
-    this.app.use(bodyParser.json());
-
-    //use query string parser middlware
-    this.app.use(bodyParser.urlencoded({
-        extended: true
-    }));
-
     //use cookie parser middleware
     this.app.use(cookieParser("SECRET_GOES_HERE"));
 
@@ -109,7 +102,16 @@ export class Server {
   public routes() {
     let router: express.Router;
     router = express.Router();
-    
+    router.use(verifier);
+
+    //use json form parser middlware
+    router.use(bodyParser.json());
+
+    //use query string parser middlware
+    router.use(bodyParser.urlencoded({
+        extended: true
+    }));
+
     CanIFlyRoute.create(router);
     this.app.use(router);
   }
